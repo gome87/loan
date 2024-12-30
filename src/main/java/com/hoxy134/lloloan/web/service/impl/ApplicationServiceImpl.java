@@ -2,16 +2,24 @@ package com.hoxy134.lloloan.web.service.impl;
 
 import com.hoxy134.lloloan.common.exception.BaseException;
 import com.hoxy134.lloloan.common.exception.ResultType;
+import com.hoxy134.lloloan.db.entity.AcceptTerms;
 import com.hoxy134.lloloan.db.entity.Application;
+import com.hoxy134.lloloan.db.entity.Terms;
+import com.hoxy134.lloloan.db.repository.AcceptTermsRepository;
 import com.hoxy134.lloloan.db.repository.ApplicationRepository;
+import com.hoxy134.lloloan.db.repository.TermsRepository;
 import com.hoxy134.lloloan.web.dto.ApplicationDTO;
 import com.hoxy134.lloloan.web.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("applicationService")
@@ -20,6 +28,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     private final ModelMapper modelMapper;
     private final ApplicationRepository applicationRepository;
+    private final TermsRepository termsRepository;
+    private final AcceptTermsRepository acceptTermsRepository;
 
     @Override
     public ApplicationDTO.Response create(ApplicationDTO.Request request) {
@@ -69,6 +79,49 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.setIsDeleted(true);
 
         applicationRepository.save(application);
+    }
+
+    @Override
+    public Boolean acceptTerms(Long applicationId, ApplicationDTO.AcceptTermsRequest request) {
+
+        // 신청 정보
+        Application application = applicationRepository.findById(applicationId).orElseThrow(() -> {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        // 약관 조회
+        List<Terms> termsList = termsRepository.findAll(Sort.by(Sort.Direction.ASC, "termsId"));
+        if(termsList.isEmpty()){
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
+
+        // 약관 개수 동일 여부
+        List<Long> acceptTermsIds = request.getAcceptTermsIds();
+        if(termsList.size() != acceptTermsIds.size()){
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
+
+        // 수신 받은 약관번호 정렬
+        Collections.sort(acceptTermsIds);
+
+        // 약관 ID만 조회
+        List<Long> termsIds = termsList.stream().map(Terms::getTermsId).collect(Collectors.toList());
+
+        // 내용이 전체 포함되는지 확인
+        if(!termsIds.containsAll(acceptTermsIds)){
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
+
+        for(Long tersId : acceptTermsIds){
+            AcceptTerms acceptEntity = AcceptTerms.builder()
+                    .termsId(tersId)
+                    .applicationId(applicationId)
+                    .build();
+
+            acceptTermsRepository.save(acceptEntity);
+        }
+
+        return true;
     }
 
 }
