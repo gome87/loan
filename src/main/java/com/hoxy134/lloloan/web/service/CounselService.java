@@ -6,4 +6,10 @@ public interface CounselService {
 
     CounselDTO.Response create(CounselDTO.Request request);
 
+    CounselDTO.Response getFindId(Long counselId);
+
+    CounselDTO.Response update(Long counselId, CounselDTO.Request request);
+
+    void delete(Long counselId);
+
 }
