@@ -1,9 +1,5 @@
 package com.hoxy134.lloloan.web.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
-import com.hoxy134.lloloan.db.entity.Application;
 import com.hoxy134.lloloan.db.entity.Terms;
 import com.hoxy134.lloloan.db.repository.TermsRepository;
 import com.hoxy134.lloloan.web.dto.TermsDTO;
@@ -18,6 +14,9 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)

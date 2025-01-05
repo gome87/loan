@@ -1,12 +1,8 @@
 package com.hoxy134.lloloan.web.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 import com.hoxy134.lloloan.common.exception.BaseException;
 import com.hoxy134.lloloan.db.entity.AcceptTerms;
 import com.hoxy134.lloloan.db.entity.Application;
-import com.hoxy134.lloloan.db.entity.Counsel;
 import com.hoxy134.lloloan.db.entity.Terms;
 import com.hoxy134.lloloan.db.repository.AcceptTermsRepository;
 import com.hoxy134.lloloan.db.repository.ApplicationRepository;
@@ -27,6 +23,9 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ApplicationServiceImplTest {
