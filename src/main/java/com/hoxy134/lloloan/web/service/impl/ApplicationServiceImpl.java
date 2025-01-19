@@ -7,6 +7,7 @@ import com.hoxy134.lloloan.db.entity.Application;
 import com.hoxy134.lloloan.db.entity.Terms;
 import com.hoxy134.lloloan.db.repository.AcceptTermsRepository;
 import com.hoxy134.lloloan.db.repository.ApplicationRepository;
+import com.hoxy134.lloloan.db.repository.JudgmentRepository;
 import com.hoxy134.lloloan.db.repository.TermsRepository;
 import com.hoxy134.lloloan.web.dto.ApplicationDTO;
 import com.hoxy134.lloloan.web.service.ApplicationService;
@@ -16,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +32,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final TermsRepository termsRepository;
     private final AcceptTermsRepository acceptTermsRepository;
+    private final JudgmentRepository judgmentRepository;
 
     @Override
     public ApplicationDTO.Response create(ApplicationDTO.Request request) {
@@ -122,6 +125,33 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         return true;
+    }
+
+    // 대출 계약 기능 구현
+    @Override
+    public ApplicationDTO.Response contract(Long applicationId) {
+
+        // 신청 정보가 있는지
+        Application  application = applicationRepository.findById(applicationId).orElseThrow(() -> {
+                throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        // 심사 정보가 있는지
+        judgmentRepository.findByApplicationId(applicationId).orElseThrow(() -> {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        // 승인 금액 > 0
+        if(application.getApprovalAmount() == null || application.getApprovalAmount().compareTo(BigDecimal.ZERO) == 0){
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        }
+
+        // 계약 체결
+        application.setContractedAt(LocalDateTime.now());
+        applicationRepository.save(application);
+
+
+        return null;
     }
 
 }

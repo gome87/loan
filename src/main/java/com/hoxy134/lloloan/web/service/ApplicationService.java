@@ -14,4 +14,7 @@ public interface ApplicationService {
 
     Boolean acceptTerms(Long applicationId, ApplicationDTO.AcceptTermsRequest request);
 
+    // 대출 계약 기능 구현
+    ApplicationDTO.Response contract(Long applicationId);
+
 }
