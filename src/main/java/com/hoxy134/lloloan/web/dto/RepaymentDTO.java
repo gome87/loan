@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class BalanceDTO implements Serializable {
+public class RepaymentDTO implements Serializable {
 
     @NoArgsConstructor
     @AllArgsConstructor
@@ -15,9 +15,7 @@ public class BalanceDTO implements Serializable {
     @Setter
     public static class Request {
 
-        private Long applicationId;
-
-        private BigDecimal enrtyAmount;
+        private BigDecimal repaymentAmount;
     }
 
     @NoArgsConstructor
@@ -27,9 +25,9 @@ public class BalanceDTO implements Serializable {
     @Setter
     public static class Response {
 
-        private Long balanceId;
-
         private Long applicationId;
+
+        private BigDecimal repaymentAmount;
 
         private BigDecimal balance;
 
@@ -43,13 +41,15 @@ public class BalanceDTO implements Serializable {
     @Builder
     @Getter
     @Setter
-    public static class UpdateRequest {
+    public static class ListResponse {
 
-        private Long applicationId;
+        private Long repaymentId;
 
-        private BigDecimal beforeEnrtyAmount;
+        private BigDecimal repaymentAmount;
 
-        private BigDecimal afterEnrtyAmount;
+        private LocalDateTime createdAt;
+
+        private LocalDateTime updatedAt;
     }
 
     @NoArgsConstructor
@@ -57,16 +57,19 @@ public class BalanceDTO implements Serializable {
     @Builder
     @Getter
     @Setter
-    public static class RepaymentRequest {
+    public static class UpdateResponse {
 
-        public enum RepaymentType {
-            ADD,
-            REMOVE
-        }
+        private Long applicationId;
 
-        private RepaymentType type;
+        private BigDecimal beforeRepaymentAmount;
 
-        private BigDecimal repaymentAmount;
+        private BigDecimal afterRepaymentAmount;
+
+        private BigDecimal balance;
+
+        private LocalDateTime createdAt;
+
+        private LocalDateTime updatedAt;
     }
 
 }

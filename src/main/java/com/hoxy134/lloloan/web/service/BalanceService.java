@@ -8,4 +8,6 @@ public interface BalanceService {
 
     BalanceDTO.Response update(Long applicationId, BalanceDTO.UpdateRequest request);
 
+    BalanceDTO.Response repaymentUpdate(Long applicationId, BalanceDTO.RepaymentRequest request);
+
 }

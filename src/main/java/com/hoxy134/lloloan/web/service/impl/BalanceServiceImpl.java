@@ -66,5 +66,28 @@ public class BalanceServiceImpl implements BalanceService {
         return modelMapper.map(updated, BalanceDTO.Response.class);
     }
 
+    @Override
+    public BalanceDTO.Response repaymentUpdate(Long applicationId, BalanceDTO.RepaymentRequest request) {
+        Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(() -> {
+            throw new BaseException(ResultType.SYSTEM_ERROR);
+        });
+
+        BigDecimal updateBalance = balance.getBalance();
+        BigDecimal repaymentAmount = request.getRepaymentAmount();
+
+        // 상환
+        if(request.getType().equals(BalanceDTO.RepaymentRequest.RepaymentType.ADD)){
+            updateBalance = updateBalance.add(repaymentAmount);
+        } else {
+            updateBalance = updateBalance.subtract(repaymentAmount);
+        }
+
+        balance.setBalance(updateBalance);
+
+        Balance updated = balanceRepository.save(balance);
+
+        return modelMapper.map(updated, BalanceDTO.Response.class);
+    }
+
 
 }
